@@ -1,4 +1,35 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet";
+import styled from "styled-components";
+import { FaQuestionCircle } from "react-icons/fa";
+import { toast } from "react-toastify";
+
+const FormWrapper = styled.div`
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+`;
+
+const Input = styled.input`
+  padding: 8px;
+  flex: 1;
+  min-width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+`;
+
+const Button = styled.button`
+  padding: 8px 15px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.9;
+  }
+`;
 
 function FAQ() {
   const [preguntas, setPreguntas] = useState([
@@ -10,50 +41,68 @@ function FAQ() {
   const [nuevaPregunta, setNuevaPregunta] = useState("");
 
   const agregarPregunta = () => {
-    if (nuevaPregunta.trim() === "") return;
+    if (nuevaPregunta.trim() === "") {
+      toast.error("La pregunta no puede estar vacía");
+      return;
+    }
     const nueva = {
       pregunta: nuevaPregunta,
       respuesta: "Gracias por tu consulta. Pronto la responderemos."
     };
     setPreguntas([...preguntas, nueva]);
     setNuevaPregunta("");
+    toast.success("Pregunta enviada correctamente ✅");
   };
 
-  const preguntaAleatoria = preguntas[Math.floor(Math.random() * preguntas.length)];
-
   return (
-    <section>
-      <h2>Preguntas Frecuentes</h2>
+    <section className="container py-4">
+      <Helmet>
+        <title>iLevenN - Preguntas Frecuentes</title>
+        <meta name="description" content="Encuentra respuestas rápidas a tus dudas sobre iLevenN." />
+      </Helmet>
 
-      <div style={{ marginBottom: "20px" }}>
-        <h3>Pregunta aleatoria:</h3>
-        <p><strong>{preguntaAleatoria.pregunta}</strong></p>
-        <p>{preguntaAleatoria.respuesta}</p>
+      <h2 className="mb-4"><FaQuestionCircle /> Preguntas Frecuentes</h2>
+
+      <div className="accordion mb-4" id="faqAccordion">
+        {preguntas.map((item, index) => (
+          <div className="accordion-item" key={index}>
+            <h2 className="accordion-header" id={`heading${index}`}>
+              <button
+                className="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target={`#collapse${index}`}
+                aria-expanded="false"
+                aria-controls={`collapse${index}`}
+              >
+                {item.pregunta}
+              </button>
+            </h2>
+            <div
+              id={`collapse${index}`}
+              className="accordion-collapse collapse"
+              aria-labelledby={`heading${index}`}
+              data-bs-parent="#faqAccordion"
+            >
+              <div className="accordion-body">
+                {item.respuesta}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
-      <div>
-        <h3>¿Querés hacer una nueva pregunta?</h3>
-        <input
+      <h3>¿Querés hacer una nueva pregunta?</h3>
+      <FormWrapper>
+        <Input
           type="text"
           value={nuevaPregunta}
           onChange={(e) => setNuevaPregunta(e.target.value)}
           placeholder="Escribí tu pregunta..."
-          style={{ padding: "8px", width: "300px", marginRight: "10px" }}
+          aria-label="Campo para nueva pregunta"
         />
-        <button onClick={agregarPregunta}>Enviar</button>
-      </div>
-
-      <hr style={{ margin: "30px 0" }} />
-
-      <h3>Todas las preguntas:</h3>
-      <ul>
-        {preguntas.map((item, index) => (
-          <li key={index}>
-            <strong>{item.pregunta}</strong><br />
-            {item.respuesta}
-          </li>
-        ))}
-      </ul>
+        <Button onClick={agregarPregunta}>Enviar</Button>
+      </FormWrapper>
     </section>
   );
 }

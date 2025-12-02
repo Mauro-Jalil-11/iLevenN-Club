@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet";
 
 function DetalleProducto() {
   const { id } = useParams();
@@ -29,6 +30,11 @@ function DetalleProducto() {
 
   return (
     <section style={{ padding: "20px" }}>
+      <Helmet>
+        <title>{producto.title} - iLevenN</title>
+        <meta name="description" content={`Compra ${producto.title} al mejor precio en iLevenN.`} />
+      </Helmet>
+
       <h2>{producto.title}</h2>
       <img src={producto.image} alt={producto.title} style={{ width: "150px" }} />
       <p>{producto.description}</p>
